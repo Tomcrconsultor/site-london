@@ -46,34 +46,34 @@ export default function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-4">
+          <a href="#" className="flex items-center gap-2 sm:gap-4 flex-shrink-0 mr-4 md:mr-8 lg:mr-16">
             <img
               src="/logo.png"
               alt="London School"
-              className={`h-14 md:h-16 w-auto object-contain transition-all duration-300 rounded-lg ${
+              className={`h-12 sm:h-14 md:h-16 w-auto object-contain transition-all duration-300 rounded-lg ${
                 isScrolled ? '' : 'opacity-90'
               }`}
               style={{ 
-                minWidth: '60px', 
-                maxWidth: '140px',
+                minWidth: '50px', 
+                maxWidth: '120px',
                 filter: isScrolled ? 'none' : 'drop-shadow(0 0 4px rgba(255,255,255,0.5))'
               }}
             />
-            <div className={`hidden sm:block transition-all duration-300 ${
+            <div className={`block transition-all duration-300 ${
               isScrolled ? 'text-neutral-900' : 'text-white'
             }`}>
-              <h1 className="text-xl font-playfair font-bold">London School</h1>
-              <p className="text-sm opacity-80">Escola de Idiomas</p>
+              <h1 className="text-sm sm:text-base md:text-xl font-playfair font-bold leading-tight">London School</h1>
+              <p className="text-xs sm:text-sm opacity-80 whitespace-nowrap">Escola de Idiomas</p>
             </div>
           </a>
 
           {/* Menu Desktop */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center gap-3 lg:gap-5 xl:gap-8 flex-shrink-0">
             {menuItems.map((item) => (
               <button
                 key={item.href}
                 onClick={() => scrollToSection(item.href)}
-                className={`text-sm font-medium transition-colors ${
+                className={`text-sm font-medium transition-colors whitespace-nowrap ${
                   isScrolled ? "text-neutral-700 hover:text-[#1E3A8A]" : "text-white hover:text-white/80"
                 }`}
               >
@@ -82,7 +82,8 @@ export default function Navbar() {
             ))}
             <Button
               onClick={() => scrollToSection("#cta-final")}
-              className="bg-[#1E3A8A] text-white hover:bg-[#1E3A8A]/90"
+              className="bg-[#1E3A8A] text-white hover:bg-[#1E3A8A]/90 whitespace-nowrap min-w-[90px] text-sm"
+              size="sm"
             >
               Aula Grátis
             </Button>

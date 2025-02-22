@@ -33,24 +33,28 @@ export default function CTAFinal() {
             Não deixe seu sonho de falar um novo idioma para depois. Junte-se aos nossos mais de 2.000 alunos satisfeitos e conquiste a fluência que vai abrir portas no mundo inteiro.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch max-w-3xl mx-auto px-4">
             <Button
               size="lg"
               onClick={() => redirectToWhatsApp()}
-              className="bg-white text-[#1E3A8A] hover:bg-white/90 text-lg px-8 py-6 rounded-xl flex items-center gap-2 w-full sm:w-auto"
+              className="bg-white text-[#1E3A8A] hover:bg-white/90 text-sm sm:text-base w-full sm:flex-1 py-4 sm:py-6 rounded-xl flex items-center justify-center gap-2 transition-all"
             >
-              Agende sua aula experimental gratuita
-              <ArrowRight className="w-5 h-5" />
+              <span className="line-clamp-2 text-center">
+                Agende sua aula experimental gratuita
+              </span>
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
             </Button>
             
             <Button
               variant="outline"
               size="lg"
               onClick={() => redirectToWhatsApp(CONTACT_MESSAGE)}
-              className="border-white text-white hover:bg-white/10 text-lg px-8 py-6 rounded-xl flex items-center gap-2 w-full sm:w-auto"
+              className="border-white text-white hover:bg-white/10 text-sm sm:text-base w-full sm:flex-1 py-4 sm:py-6 rounded-xl flex items-center justify-center gap-2 transition-all"
             >
-              Fale com nossa equipe
-              <MessageCircle className="w-5 h-5" />
+              <span className="line-clamp-2 text-center">
+                Fale com nossa equipe
+              </span>
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
             </Button>
           </div>
           
