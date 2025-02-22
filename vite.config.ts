@@ -5,10 +5,7 @@ import { compression } from 'vite-plugin-compression2';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    compression()
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -21,9 +18,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui': ['@radix-ui', '@hookform', 'class-variance-authority', 'clsx', 'tailwind-merge'],
-          'animations': ['framer-motion']
+          vendor: ['react', 'react-dom', 'react-router-dom'],
         }
       }
     },
