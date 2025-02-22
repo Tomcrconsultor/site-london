@@ -17,15 +17,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor';
-            }
-            return 'deps';
-          }
+        manualChunks: {
+          'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui': ['@radix-ui', '@hookform', 'class-variance-authority', 'clsx', 'tailwind-merge'],
+          'animations': ['framer-motion']
         }
       }
     },
@@ -39,6 +37,7 @@ export default defineConfig({
     }
   },
   server: {
+    host: true,
     port: 3000,
     open: true
   },
