@@ -24,10 +24,14 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-*'],
-          motion: ['framer-motion'],
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('@radix-ui')) return 'vendor-radix';
+            if (id.includes('framer-motion')) return 'vendor-motion';
+            if (id.includes('lucide-react')) return 'vendor-icons';
+            return 'vendor';
+          }
         }
       }
     },
@@ -38,6 +42,15 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+        passes: 2,
+        ecma: 2020
+      },
+      mangle: {
+        safari10: true
+      },
+      format: {
+        comments: false,
+        ecma: 2020
       }
     },
     cssMinify: true,
@@ -46,6 +59,8 @@ export default defineConfig({
       polyfill: true
     },
     reportCompressedSize: false,
+    target: 'es2020',
+    assetsInlineLimit: 4096
   },
   server: {
     host: true,
@@ -56,5 +71,11 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
     exclude: ['@radix-ui/react-*']
+  },
+  esbuild: {
+    jsxInject: `import React from 'react'`,
+    target: 'es2020',
+    legalComments: 'none',
+    treeShaking: true
   }
 });

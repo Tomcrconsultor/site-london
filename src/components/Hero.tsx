@@ -13,13 +13,39 @@ const Hero = () => {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img
-          src="/images/hero-background.webp"
-          alt="Estudantes felizes aprendendo juntos"
-          className="w-full h-full object-cover"
-          fetchPriority="high"
-          decoding="async"
-        />
+        <picture>
+          {/* Versão mobile otimizada */}
+          <source
+            media="(max-width: 640px)"
+            srcSet="/images/hero-mobile.webp"
+            type="image/webp"
+          />
+          {/* Versão tablet otimizada */}
+          <source
+            media="(max-width: 1024px)"
+            srcSet="/images/hero-tablet.webp"
+            type="image/webp"
+          />
+          {/* Versão desktop */}
+          <source
+            srcSet="/images/hero-background.webp"
+            type="image/webp"
+          />
+          <img
+            src="/images/hero-background.webp"
+            alt="Estudantes felizes aprendendo juntos"
+            className="w-full h-full object-cover"
+            width="1920"
+            height="1080"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            style={{
+              aspectRatio: '16/9',
+              objectFit: 'cover'
+            }}
+          />
+        </picture>
         <div className="absolute inset-0 bg-neutral-900/70 backdrop-blur-sm"></div>
       </div>
       

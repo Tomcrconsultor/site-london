@@ -8,19 +8,50 @@
     <title>London School - Escola de Idiomas</title>
     
     <!-- Preload de recursos críticos -->
-    <link rel="preload" href="/images/hero-background.webp" as="image" type="image/webp" fetchpriority="high" />
+    <link rel="preload" href="/images/hero-mobile.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 640px)" />
+    <link rel="preload" href="/images/hero-tablet.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 1024px)" />
+    <link rel="preload" href="/images/hero-background.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 1025px)" />
     <link rel="preload" href="/logo.png" as="image" type="image/png" fetchpriority="high" />
     
-    <!-- Fontes otimizadas -->
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    
+    <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" as="style" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Fontes otimizadas -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+    </noscript>
     
     <meta property="og:image" content="/og-image.png" />
+    
+    <!-- Preload do JavaScript principal -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    
+    <!-- Inline de CSS crítico -->
+    <style>
+      /* Estilos críticos para o primeiro render */
+      :root{--font-inter:'Inter',sans-serif;--font-playfair:'Playfair Display',serif}
+      body{margin:0;font-family:var(--font-inter)}
+      .animate-fade-up{animation:fadeUp .5s ease-out}
+      @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+      .backdrop-blur-sm{backdrop-filter:blur(4px)}
+      .bg-neutral-900\/70{background-color:rgba(23,23,23,.7)}
+      .container{width:100%;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem}
+      @media (min-width:640px){.container{max-width:640px}}
+      @media (min-width:768px){.container{max-width:768px}}
+      @media (min-width:1024px){.container{max-width:1024px}}
+      @media (min-width:1280px){.container{max-width:1280px}}
+    </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/main.tsx" async></script>
   </body>
 </html>
