@@ -5,7 +5,14 @@ import { compression } from 'vite-plugin-compression2';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    compression({
+      algorithm: 'brotliCompress',
+      exclude: [/\.(br)$/, /\.(gz)$/],
+      deleteOriginalAssets: false,
+    })
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -19,6 +26,8 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@radix-ui/react-*'],
+          motion: ['framer-motion'],
         }
       }
     },
@@ -27,14 +36,25 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
       }
-    }
+    },
+    cssMinify: true,
+    cssCodeSplit: true,
+    modulePreload: {
+      polyfill: true
+    },
+    reportCompressedSize: false,
   },
   server: {
     host: true,
     port: 3000,
     open: true
   },
-  base: '/'
+  base: '/',
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    exclude: ['@radix-ui/react-*']
+  }
 });

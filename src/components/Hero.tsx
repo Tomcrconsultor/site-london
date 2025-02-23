@@ -17,7 +17,7 @@ const Hero = () => {
           src="/images/hero-background.webp"
           alt="Estudantes felizes aprendendo juntos"
           className="w-full h-full object-cover"
-          loading="lazy"
+          fetchPriority="high"
           decoding="async"
         />
         <div className="absolute inset-0 bg-neutral-900/70 backdrop-blur-sm"></div>
