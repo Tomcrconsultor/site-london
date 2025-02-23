@@ -99,8 +99,8 @@ export default function PoliticaDePrivacidade() {
               </h2>
               <p className="text-neutral-600">
                 Para questões relacionadas à privacidade de seus dados, entre em contato conosco através do e-mail: 
-                <a href="mailto:contato@londonschool.com.br" className="text-[#1E3A8A] hover:text-[#1E3A8A]/80 ml-1">
-                  contato@londonschool.com.br
+                <a href="mailto:londonschoolmogi@gmail.com" className="text-[#1E3A8A] hover:text-[#1E3A8A]/80 ml-1">
+                  londonschoolmogi@gmail.com
                 </a>
               </p>
             </section>

@@ -77,8 +77,8 @@ const Contact = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">E-mail</h3>
                 <p className="text-neutral-600">
-                  <a href="mailto:contato@londonschool.com.br" className="hover:text-[#1E3A8A]">
-                    contato@londonschool.com.br
+                  <a href="mailto:londonschoolmogi@gmail.com" className="hover:text-[#1E3A8A]">
+                    londonschoolmogi@gmail.com
                   </a>
                 </p>
               </div>
