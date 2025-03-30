@@ -14,7 +14,7 @@ const languages = [
     name: "Inglês",
     nativeName: "English",
     flag: "https://flagcdn.com/w320/gb.png",
-    description: "O idioma universal para negócios, turismo e entretenimento."
+    description: "O idioma universal para negócios, turismo e entretenimento. Conecte-se com pessoas do mundo todo e finalmente entenda a letra da sua música favorita sem traduções."
   },
   {
     name: "Espanhol",
@@ -32,13 +32,13 @@ const languages = [
     name: "Alemão",
     nativeName: "Deutsch",
     flag: "https://flagcdn.com/w320/de.png",
-    description: "Destaque-se no mercado internacional com um dos idiomas mais valorizados na Europa."
+    description: "Destaque-se no mercado de trabalho aprendendo o idioma da mais alta tecnologia. Abra portas para oportunidades em empresas inovadoras."
   },
   {
     name: "Italiano",
     nativeName: "Italiano",
     flag: "https://flagcdn.com/w320/it.png",
-    description: "Aprecie a arte, a culinária e a moda italiana com fluência e confiança."
+    description: "Aprecie a arte, a culinária e a moda italiana com fluência e confiança. Mergulhe na história rica do país que deu origem ao Renascimento e desfrute de uma das culturas mais expressivas e acolhedoras do mundo."
   },
   {
     name: "Árabe",

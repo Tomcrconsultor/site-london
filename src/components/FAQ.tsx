@@ -22,10 +22,6 @@ const faqs = [
   {
     question: "Como funciona a aula experimental gratuita?",
     answer: "A aula experimental é uma oportunidade de conhecer nossa metodologia na prática. Durante 50 minutos, você terá uma aula real com um de nossos professores, experimentando como é aprender com o Método Direto."
-  },
-  {
-    question: "Vocês fornecem material didático?",
-    answer: "Sim! Trabalhamos com material didático próprio, atualizado e alinhado com nosso método. O material tem um custo de R$ 220,00 a cada 6 meses, porém alguns planos incluem o material gratuitamente quando o pagamento do semestre é feito à vista. O material é essencial para o acompanhamento das aulas e progresso no aprendizado."
   }
 ];
 
