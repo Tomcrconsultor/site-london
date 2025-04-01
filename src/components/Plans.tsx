@@ -3,6 +3,8 @@ import { Check, Star, Users, Calendar, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { redirectToWhatsAppWithCallback } from '../utils/whatsapp';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -299,12 +301,12 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
         >
           <Button 
             variant="outline"
-            onClick={() => redirectToWhatsApp(plan.whatsappMessage)}
+            onClick={() => redirectToWhatsAppWithCallback(plan.whatsappMessage, navigate)}
             className={`w-full h-11 transition-all duration-500 bg-[#1E3A8A] text-white hover:bg-[#1E3A8A]/90 ${
               isHovered ? 'shadow-lg scale-105' : ''
             }`}
           >
-            Começar Agora
+            Quero este plano
           </Button>
         </motion.div>
       </div>
@@ -324,6 +326,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
 const Plans = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const navigate = useNavigate();
 
   return (
     <section id="plans" className="py-16 overflow-hidden">

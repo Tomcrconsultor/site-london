@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { redirectToWhatsAppWithCallback, DEFAULT_MESSAGE } from '../utils/whatsapp';
 
 const WHATSAPP_NUMBER = "5511984291000";
-const DEFAULT_MESSAGE = "Olá! Gostaria de saber mais informações dos planos e horários disponíveis, e como agendar uma aula experimental gratuita.";
 
 const redirectToWhatsApp = (message: string = DEFAULT_MESSAGE) => {
   const encodedMessage = encodeURIComponent(message);
@@ -10,6 +11,8 @@ const redirectToWhatsApp = (message: string = DEFAULT_MESSAGE) => {
 };
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -33,7 +36,7 @@ const Hero = () => {
              e um método direto que coloca você conversando desde a primeira aula.
           </p>
           <Button
-            onClick={() => redirectToWhatsApp()}
+            onClick={() => redirectToWhatsAppWithCallback(DEFAULT_MESSAGE, navigate)}
             className="w-full max-w-xs md:max-w-sm mx-auto bg-orange-500 hover:bg-orange-600 text-white h-12 md:h-14 text-sm md:text-base flex items-center justify-center rounded-lg transition-all transform hover:scale-105 px-6 whitespace-normal"
           >
             Agende agora sua aula experimental gratuita
