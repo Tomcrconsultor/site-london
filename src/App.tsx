@@ -14,20 +14,25 @@ function App() {
 
   // Adiciona evento de histórico de navegação para página única (SPA)
   useEffect(() => {
-    const handleRouteChange = () => {
-      // Rastreia visualização de página a cada mudança de rota
-      if (window.fbq) {
-        window.fbq('track', 'PageView');
-      }
-    };
+    try {
+      const handleRouteChange = () => {
+        // Rastreia visualização de página a cada mudança de rota
+        if (typeof window !== 'undefined' && window.fbq) {
+          window.fbq('track', 'PageView');
+        }
+      };
 
-    // Adiciona listener para mudanças de história
-    window.addEventListener('popstate', handleRouteChange);
-    
-    return () => {
-      // Remove listener na limpeza
-      window.removeEventListener('popstate', handleRouteChange);
-    };
+      // Adiciona listener para mudanças de história
+      window.addEventListener('popstate', handleRouteChange);
+      
+      return () => {
+        // Remove listener na limpeza
+        window.removeEventListener('popstate', handleRouteChange);
+      };
+    } catch (error) {
+      console.warn('[FB Pixel] Erro ao configurar rastreamento de rotas:', error);
+      // Não propagar o erro para não quebrar a aplicação
+    }
   }, []);
 
   return (

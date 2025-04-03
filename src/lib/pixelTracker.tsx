@@ -9,10 +9,14 @@ interface PixelEventOptions {
  * Função para rastrear eventos no Facebook Pixel pelo lado do cliente
  */
 export const trackPixelEvent = ({ eventName, params = {} }: PixelEventOptions) => {
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', eventName, params);
-  } else {
-    console.log(`[DEV] Facebook Pixel Event: ${eventName}`, params);
+  try {
+    if (typeof window !== 'undefined' && window?.fbq) {
+      window.fbq('track', eventName, params);
+    } else {
+      console.log(`[DEV] Facebook Pixel Event: ${eventName}`, params);
+    }
+  } catch (error) {
+    console.warn('[FB Pixel] Erro ao rastrear evento:', error);
   }
 };
 
@@ -37,12 +41,18 @@ export const TrackClick: React.FC<TrackClickProps> = ({
   onClick,
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Rastrear o evento no Facebook Pixel
-    trackPixelEvent({ eventName, params });
-    
-    // Chamar o manipulador de eventos personalizado, se fornecido
-    if (onClick) {
-      onClick(e);
+    try {
+      // Rastrear o evento no Facebook Pixel
+      trackPixelEvent({ eventName, params });
+      
+      // Chamar o manipulador de eventos personalizado, se fornecido
+      if (onClick) {
+        onClick(e);
+      }
+    } catch (error) {
+      console.warn('[FB Pixel] Erro ao processar clique:', error);
+      // Garantir que o onClick original seja chamado mesmo em caso de erro
+      if (onClick) onClick(e);
     }
   };
 
@@ -58,18 +68,22 @@ export const TrackClick: React.FC<TrackClickProps> = ({
  */
 export const useInitPixel = (pixelId: string) => {
   useEffect(() => {
-    if (typeof window !== 'undefined' && pixelId) {
-      // Verifica se o Facebook Pixel já foi inicializado
-      if (!(window as any).fbq) {
-        console.error('Facebook Pixel não está disponível no objeto window');
-        return;
-      }
+    try {
+      if (typeof window !== 'undefined' && pixelId) {
+        // Se o Facebook Pixel não foi carregado no objeto window, apenas loga um aviso
+        if (!window.fbq) {
+          console.warn('Facebook Pixel não disponível no objeto window. Verifique se o script foi carregado corretamente.');
+          return;
+        }
 
-      // Reinicializa o pixel
-      (window as any).fbq('init', pixelId);
-      
-      // Rastreia a visualização da página inicial
-      (window as any).fbq('track', 'PageView');
+        // Reinicializa o pixel
+        window.fbq('init', pixelId);
+        
+        // Rastreia a visualização da página inicial
+        window.fbq('track', 'PageView');
+      }
+    } catch (error) {
+      console.warn('[FB Pixel] Erro ao inicializar o pixel:', error);
     }
   }, [pixelId]);
 };
@@ -79,22 +93,25 @@ export const useInitPixel = (pixelId: string) => {
  */
 export const usePageViewTracker = () => {
   useEffect(() => {
-    // Função para rastrear visualizações de página
-    const trackPageView = () => {
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'PageView');
-      }
-    };
+    try {
+      // Função para rastrear visualizações de página
+      const trackPageView = () => {
+        if (typeof window !== 'undefined' && window.fbq) {
+          window.fbq('track', 'PageView');
+        }
+      };
 
-    // Rastrear visualização de página no carregamento inicial
-    trackPageView();
+      // Rastrear visualização de página no carregamento inicial
+      trackPageView();
 
-    // Se estiver usando React Router ou outra biblioteca de roteamento,
-    // você pode adicionar um listener para mudanças de rota aqui
-    
-    // Exemplo (descomentado se estiver usando react-router):
-    // return history.listen(trackPageView);
-    
+      // Se estiver usando React Router ou outra biblioteca de roteamento,
+      // você pode adicionar um listener para mudanças de rota aqui
+      
+      // Exemplo (descomentado se estiver usando react-router):
+      // return history.listen(trackPageView);
+    } catch (error) {
+      console.warn('[FB Pixel] Erro ao rastrear visualização de página:', error);
+    }
   }, []);
 };
 

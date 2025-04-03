@@ -54,7 +54,7 @@ export async function sendServerEvent({
     const accessToken = process.env.FACEBOOK_API_ACCESS_TOKEN;
     
     if (!accessToken) {
-      console.error('Facebook API Access Token não encontrado');
+      console.warn('Facebook API Access Token não encontrado. Eventos de servidor não serão enviados.');
       return;
     }
 
@@ -88,7 +88,8 @@ export async function sendServerEvent({
     return response.data;
   } catch (error) {
     console.error('Erro ao enviar evento para o Facebook:', error);
-    throw error;
+    // Não propagar o erro para não interromper o fluxo da aplicação
+    return { success: false, error };
   }
 }
 
@@ -98,21 +99,33 @@ export async function sendServerEvent({
  * Esta é uma implementação básica para exemplo
  */
 function hashData(data: string): string {
-  // Na implementação real, você usaria:
-  // return crypto.createHash('sha256').update(data.trim().toLowerCase()).digest('hex');
+  if (!data) return '';
   
-  // Aqui, apenas retornamos um placeholder
-  return data.trim().toLowerCase();
+  try {
+    // Na implementação real, você usaria:
+    // return crypto.createHash('sha256').update(data.trim().toLowerCase()).digest('hex');
+    
+    // Aqui, apenas retornamos um placeholder
+    return data.trim().toLowerCase();
+  } catch (e) {
+    console.warn('Erro ao hashear dados:', e);
+    return '';
+  }
 }
 
 /**
  * Função para capturar os parâmetros FBP e FBC dos cookies
  */
-export function getFacebookCookieParams(cookies: Record<string, string>) {
-  return {
-    fbp: cookies._fbp,
-    fbc: cookies._fbc,
-  };
+export function getFacebookCookieParams(cookies: Record<string, string> = {}) {
+  try {
+    return {
+      fbp: cookies._fbp,
+      fbc: cookies._fbc,
+    };
+  } catch (e) {
+    console.warn('Erro ao obter parâmetros de cookies do Facebook:', e);
+    return { fbp: undefined, fbc: undefined };
+  }
 }
 
 /**
