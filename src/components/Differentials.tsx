@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageCircle, Users, Zap, Clock, BookOpen } from "lucide-react";
+import { MessageCircle, Users, Zap, Clock, BookOpen, UserPlus } from "lucide-react";
 
 const differentials = [
   {
@@ -19,8 +19,13 @@ const differentials = [
   },
   {
     icon: Clock,
-    title: "Flexibilidade de horários e formatos",
-    description: "Escolha entre aulas presenciais em nossa escola em Mogi das Cruzes ou no conforto da sua casa, com aulas online ao vivo."
+    title: "Planos personalizados e flexíveis",
+    description: "Escolha entre aulas presenciais em nossa escola em Mogi das Cruzes ou no conforto da sua casa, com aulas online ao vivo. Aulas no seu ritmo e nos seus melhores horários."
+  },
+  {
+    icon: UserPlus,
+    title: "Turmas reduzidas",
+    description: "Turmas formadas com 6 alunos na mesma faixa etária e no mesmo nível."
   },
   {
     icon: BookOpen,

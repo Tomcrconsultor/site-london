@@ -13,7 +13,7 @@ const languages = [
   {
     name: "Inglês",
     nativeName: "English",
-    flag: "https://flagcdn.com/w320/us.png",
+    flag: "https://flagcdn.com/w320/gb.png",
     description: "O idioma universal para negócios, turismo e entretenimento."
   },
   {
@@ -43,7 +43,7 @@ const languages = [
   {
     name: "Árabe",
     nativeName: "العربية",
-    flag: "https://flagcdn.com/w320/sa.png",
+    flag: "https://flagcdn.com/w320/ps.png",
     description: "Explore uma das línguas mais antigas e ricas culturalmente, essencial para negócios no Oriente Médio."
   },
   {

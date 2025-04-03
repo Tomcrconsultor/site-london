@@ -9,7 +9,7 @@ const Statistics = () => {
 
   const stats = [
     { number: 2450, label: "Alunos Fluentes" },
-    { number: 276000, label: "Aulas Concluídas" },
+    { number: 216000, label: "Aulas Concluídas" },
     { number: 7, label: "Idiomas Oferecidos" },
     { number: 18, label: "Anos de Experiência" },
   ];
