@@ -157,6 +157,7 @@ const Contact = () => {
               size="lg"
               onClick={() => redirectToWhatsApp()}
               className="w-full bg-primary hover:bg-primary-hover text-white h-14 flex items-center justify-center rounded-lg transition-all transform hover:scale-105"
+              data-button-type="aula"
             >
               Agende sua Aula Experimental
             </Button>

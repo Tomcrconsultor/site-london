@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Index from './pages/Index';
 import PoliticaDePrivacidade from './components/PoliticaDePrivacidade';
 import TermosDeUso from './components/TermosDeUso';
-import { useInitPixel, trackPixelEvent, PixelEvents } from './lib/pixelTracker';
+import { useInitPixel, trackPixelEvent, PixelEvents, useButtonClickTracking } from './lib/pixelTracker';
 
 // Componente para rastrear mudanças de rota
 function RouteChangeTracker() {
@@ -27,6 +27,51 @@ function RouteChangeTracker() {
     }
   }, [location]);
   
+  return null;
+}
+
+// Componente para rastrear todos os botões do site
+function GlobalButtonTracking() {
+  // Rastreia todos os botões <button>, .btn, e elementos com .button
+  useButtonClickTracking('button, .btn, .button, a.btn, a.button', PixelEvents.LEAD, {
+    content_name: 'Clique em Botão',
+    content_category: 'Interação',
+    value: 1,
+    currency: 'BRL'
+  });
+
+  // Rastreia botões específicos importantes
+  useButtonClickTracking('[data-button-type="aula"]', PixelEvents.LEAD, {
+    content_name: 'Aula Experimental',
+    content_category: 'Conversão Principal',
+    value: 50,
+    currency: 'BRL'
+  });
+  
+  // Rastreia links para WhatsApp
+  useButtonClickTracking('a[href*="wa.me"], a[href*="whatsapp"]', PixelEvents.LEAD, {
+    content_name: 'Contato WhatsApp',
+    content_category: 'Contato',
+    value: 10,
+    currency: 'BRL'
+  });
+  
+  // Rastreia todos os cliques em links de telefone
+  useButtonClickTracking('a[href^="tel:"]', PixelEvents.LEAD, {
+    content_name: 'Ligação Telefônica',
+    content_category: 'Contato',
+    value: 5,
+    currency: 'BRL'
+  });
+  
+  // Rastreia todos os cliques em links de e-mail
+  useButtonClickTracking('a[href^="mailto:"]', PixelEvents.LEAD, {
+    content_name: 'Contato Email',
+    content_category: 'Contato',
+    value: 3,
+    currency: 'BRL'
+  });
+
   return null;
 }
 
@@ -60,6 +105,7 @@ function App() {
   return (
     <BrowserRouter>
       <RouteChangeTracker />
+      <GlobalButtonTracking />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
