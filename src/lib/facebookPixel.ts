@@ -1,143 +1,230 @@
-import axios from 'axios';
+/**
+ * Implementação do Facebook Pixel com suporte para Conversions API (servidor)
+ * e tipagem TS completa para rastreamento de eventos
+ */
 
-// ID do Pixel do Facebook
+// ID do seu Pixel e token de acesso da API de Conversões do Facebook
 const PIXEL_ID = '522729260880939';
+const FB_API_VERSION = 'v18.0';
+const FB_ACCESS_TOKEN = process.env.REACT_APP_FB_ACCESS_TOKEN || '';
+const FB_API_URL = `https://graph.facebook.com/${FB_API_VERSION}/${PIXEL_ID}/events?access_token=${FB_ACCESS_TOKEN}`;
 
-interface EventData {
+// Interface para dados de eventos
+export interface EventData {
   event_name: string;
   event_time: number;
-  event_source_url?: string;
+  event_source_url: string;
+  event_id: string;
   user_data: {
-    client_ip_address?: string;
-    client_user_agent?: string;
-    fbp?: string;
-    fbc?: string;
     em?: string;
     ph?: string;
+    fn?: string;
+    ln?: string;
     external_id?: string;
+    client_ip_address?: string;
+    client_user_agent?: string;
+    fbc?: string;
+    fbp?: string;
+    [key: string]: any;
   };
-  custom_data?: Record<string, any>;
-  event_id?: string;
-  action_source: 'website' | 'app' | 'phone_call' | 'email' | 'chat' | 'other';
+  custom_data: Record<string, any>;
+  action_source: 'website' | 'app' | 'email' | 'other';
 }
 
+// Eventos comuns do Facebook Pixel
+export const FB_EVENTS = {
+  PAGE_VIEW: 'PageView',
+  LEAD: 'Lead',
+  COMPLETE_REGISTRATION: 'CompleteRegistration',
+  CONTACT: 'Contact',
+  BUTTON_CLICK: 'ButtonClick',
+  FORM_SUBMIT: 'FormSubmit',
+  SEARCH: 'Search',
+  VIEW_CONTENT: 'ViewContent',
+  ADD_TO_CART: 'AddToCart',
+  PURCHASE: 'Purchase',
+};
+
 /**
- * Função para enviar eventos do Facebook Pixel pelo servidor
- * https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api
+ * Envio de eventos para a API do Facebook (Conversions API)
+ * @param eventData Dados do evento a ser enviado
+ * @param dataToHash Campos que devem ser criptografados antes do envio
+ * @returns Promise com o resultado do envio
  */
-export async function sendServerEvent({
-  eventName,
-  userData,
-  customData,
-  eventId,
-  requestData,
-}: {
-  eventName: string;
-  userData: {
-    email?: string;
-    phone?: string;
-    externalId?: string;
-  };
-  customData?: Record<string, any>;
-  eventId?: string;
-  requestData?: {
-    ipAddress?: string;
-    userAgent?: string;
-    fbp?: string;
-    fbc?: string;
-    sourceUrl?: string;
-  };
-}) {
+export async function sendServerEvent(eventData: EventData, dataToHash: string[] = []): Promise<any> {
   try {
-    // Obter o token de acesso do seu sistema (armazenado de forma segura)
-    // Este token deve ser criado no Facebook Business Manager
-    const accessToken = process.env.FACEBOOK_API_ACCESS_TOKEN;
-    
-    if (!accessToken) {
-      console.warn('Facebook API Access Token não encontrado. Eventos de servidor não serão enviados.');
+    // Se não tiver token de acesso, registra aviso e não envia
+    if (!FB_ACCESS_TOKEN) {
+      console.warn('[FB Pixel] Token de acesso não configurado para Conversions API.');
       return;
     }
 
-    const eventData: EventData = {
-      event_name: eventName,
-      event_time: Math.floor(Date.now() / 1000),
-      event_source_url: requestData?.sourceUrl,
-      user_data: {
-        client_ip_address: requestData?.ipAddress,
-        client_user_agent: requestData?.userAgent,
-        fbp: requestData?.fbp,
-        fbc: requestData?.fbc,
-        em: userData.email ? hashData(userData.email) : undefined,
-        ph: userData.phone ? hashData(userData.phone) : undefined,
-        external_id: userData.externalId,
-      },
-      custom_data: customData,
-      event_id: eventId,
-      action_source: 'website',
+    // Completa os dados do usuário com informações do navegador
+    const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : '';
+    const clientIp = await getClientIp();
+    
+    // Captura cookies do Facebook 
+    const { fbc, fbp } = getFacebookCookieParams();
+
+    // Adiciona dados do usuário ao evento
+    eventData.user_data = {
+      ...eventData.user_data,
+      client_ip_address: clientIp,
+      client_user_agent: userAgent,
+      fbc,
+      fbp
     };
 
-    // Enviar para a API de Conversões do Facebook
-    const response = await axios.post(
-      `https://graph.facebook.com/v17.0/${PIXEL_ID}/events`,
-      {
-        data: [eventData],
-        access_token: accessToken,
-      }
-    );
+    // Hash dados sensíveis antes do envio
+    await hashSensitiveData(eventData, dataToHash);
 
-    return response.data;
+    // Formata os dados para o formato esperado pela API
+    const formattedData = {
+      data: [eventData]
+    };
+
+    // Envia o evento para o Facebook
+    const response = await fetch(FB_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formattedData),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(`Erro ao enviar evento: ${result.error?.message || response.statusText}`);
+    }
+    
+    return result;
   } catch (error) {
-    console.error('Erro ao enviar evento para o Facebook:', error);
-    // Não propagar o erro para não interromper o fluxo da aplicação
-    return { success: false, error };
+    console.error('[FB Pixel] Erro ao enviar evento para o servidor:', error);
+    throw error;
   }
 }
 
 /**
- * Função para hashear dados sensíveis antes de enviar ao Facebook
- * Normalmente, você usaria uma biblioteca como SHA-256 aqui
- * Esta é uma implementação básica para exemplo
+ * Gera um ID único para o evento
+ * @returns String com ID do evento
  */
-function hashData(data: string): string {
+export function generateEventId(): string {
+  return `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+}
+
+/**
+ * Obtém os parâmetros de cookie do Facebook (fbc e fbp)
+ * @returns Objeto com parâmetros fbc e fbp
+ */
+export function getFacebookCookieParams() {
+  if (typeof document === 'undefined') {
+    return { fbc: '', fbp: '' };
+  }
+
+  // Procura por cookies do Facebook
+  const cookies = document.cookie.split('; ');
+  let fbc = '';
+  let fbp = '';
+
+  // Extrai fbp cookie
+  const fbpCookie = cookies.find(c => c.startsWith('_fbp='));
+  if (fbpCookie) {
+    fbp = fbpCookie.split('=')[1];
+  }
+
+  // Extrai fbc cookie
+  const fbcCookie = cookies.find(c => c.startsWith('_fbc='));
+  if (fbcCookie) {
+    fbc = fbcCookie.split('=')[1];
+  } else {
+    // Se não encontrar _fbc cookie, tenta extrair do parâmetro URL fbclid
+    try {
+      const url = new URL(window.location.href);
+      const fbclid = url.searchParams.get('fbclid');
+      if (fbclid) {
+        // Formato: fb.1.{timestamp}.{fbclid}
+        fbc = `fb.1.${Date.now()}.${fbclid}`;
+      }
+    } catch (e) {
+      console.warn('[FB Pixel] Erro ao processar fbclid:', e);
+    }
+  }
+
+  return { fbc, fbp };
+}
+
+/**
+ * Aplica hash SHA-256 aos dados sensíveis
+ * @param eventData Dados do evento
+ * @param fieldsToHash Lista de campos para aplicar hash
+ */
+async function hashSensitiveData(eventData: EventData, fieldsToHash: string[]): Promise<void> {
+  if (!fieldsToHash || fieldsToHash.length === 0) {
+    return;
+  }
+
+  try {
+    // Para cada campo que precisa de hash nos dados de usuário
+    for (const field of fieldsToHash) {
+      if (eventData.user_data[field]) {
+        const value = String(eventData.user_data[field]).trim().toLowerCase();
+        if (value) {
+          eventData.user_data[field] = await hashData(value);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[FB Pixel] Erro ao aplicar hash nos dados:', error);
+  }
+}
+
+/**
+ * Aplica hash SHA-256 a uma string usando Web Crypto API
+ * @param data String a ser hasheada
+ * @returns String hasheada em formato hexadecimal
+ */
+export async function hashData(data: string): Promise<string> {
   if (!data) return '';
   
   try {
-    // Na implementação real, você usaria:
-    // return crypto.createHash('sha256').update(data.trim().toLowerCase()).digest('hex');
+    // Normaliza e converte para minúsculas
+    const normalized = data.trim().toLowerCase();
     
-    // Aqui, apenas retornamos um placeholder
-    return data.trim().toLowerCase();
-  } catch (e) {
-    console.warn('Erro ao hashear dados:', e);
+    // Converte para array de bytes
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(normalized);
+    
+    // Aplica SHA-256
+    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+    
+    // Converte para hexadecimal
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    return hashHex;
+  } catch (error) {
+    console.error('[FB Pixel] Erro ao gerar hash:', error);
     return '';
   }
 }
 
 /**
- * Função para capturar os parâmetros FBP e FBC dos cookies
+ * Obtém o endereço IP do cliente
+ * @returns IP do cliente como string
  */
-export function getFacebookCookieParams(cookies: Record<string, string> = {}) {
+export async function getClientIp(): Promise<string> {
   try {
-    return {
-      fbp: cookies._fbp,
-      fbc: cookies._fbc,
-    };
-  } catch (e) {
-    console.warn('Erro ao obter parâmetros de cookies do Facebook:', e);
-    return { fbp: undefined, fbc: undefined };
+    // Em ambiente de cliente, tenta obter o IP através de um serviço público
+    // Isto é uma simulação - em produção, o IP deve ser capturado pelo servidor
+    if (typeof window !== 'undefined') {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    }
+    return '';
+  } catch (error) {
+    console.warn('[FB Pixel] Não foi possível obter o IP do cliente:', error);
+    return '';
   }
-}
-
-/**
- * Eventos mais comuns do Facebook Pixel
- */
-export const FB_EVENTS = {
-  LEAD: 'Lead',
-  COMPLETE_REGISTRATION: 'CompleteRegistration',
-  CONTACT: 'Contact',
-  SUBSCRIBE: 'Subscribe',
-  VIEW_CONTENT: 'ViewContent',
-  ADD_TO_CART: 'AddToCart',
-  INITIATE_CHECKOUT: 'InitiateCheckout',
-  PURCHASE: 'Purchase',
-}; 
+} 

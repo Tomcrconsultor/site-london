@@ -1,24 +1,46 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Index from './pages/Index';
 import PoliticaDePrivacidade from './components/PoliticaDePrivacidade';
 import TermosDeUso from './components/TermosDeUso';
-import { useInitPixel, usePageViewTracker } from './lib/pixelTracker';
+import { useInitPixel, trackPixelEvent, PixelEvents } from './lib/pixelTracker';
+
+// Componente para rastrear mudanças de rota
+function RouteChangeTracker() {
+  const location = useLocation();
+  
+  useEffect(() => {
+    try {
+      // Rastreia visualização de página a cada mudança de rota
+      if (typeof window !== 'undefined' && window.fbq) {
+        trackPixelEvent({ 
+          eventName: PixelEvents.PAGE_VIEW,
+          params: { 
+            path: location.pathname,
+            search: location.search,
+            title: document.title 
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('[FB Pixel] Erro ao rastrear mudança de rota:', error);
+    }
+  }, [location]);
+  
+  return null;
+}
 
 function App() {
   // Inicializa o Facebook Pixel com o ID
   useInitPixel('522729260880939');
-  
-  // Rastreia visualizações de página em mudanças de rota
-  usePageViewTracker();
 
   // Adiciona evento de histórico de navegação para página única (SPA)
   useEffect(() => {
     try {
       const handleRouteChange = () => {
-        // Rastreia visualização de página a cada mudança de rota
+        // Rastreia visualização de página a cada mudança de rota manual (botões voltar/avançar)
         if (typeof window !== 'undefined' && window.fbq) {
-          window.fbq('track', 'PageView');
+          window.fbq('track', PixelEvents.PAGE_VIEW);
         }
       };
 
@@ -37,6 +59,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <RouteChangeTracker />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
