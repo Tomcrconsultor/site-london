@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail } from "lucide-react";
 import { Button } from "./ui/button";
-import { trackPixelEvent, PixelEvents, TrackClick } from "../lib/pixelTracker";
+import { trackPixelEvent, PixelEvents } from "../lib/pixelTracker";
 
 const WHATSAPP_NUMBER = "5511984291000";
 const DEFAULT_MESSAGE = "Olá! Gostaria de saber mais informações dos planos e horários disponíveis, e como agendar uma aula experimental gratuita.";
@@ -86,18 +86,19 @@ const Contact = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">Telefone</h3>
                 <p className="text-neutral-600">
-                  <TrackClick 
-                    eventName={PixelEvents.LEAD} 
-                    params={{
-                      content_name: 'Clique no Telefone',
-                      content_category: 'Contato',
-                    }}
-                    style={{ display: 'inline' }}
+                  <a 
+                    href="tel:+5511984291000" 
+                    className="hover:text-[#1E3A8A]"
+                    onClick={() => trackPixelEvent({
+                      eventName: PixelEvents.LEAD,
+                      params: {
+                        content_name: 'Clique no Telefone',
+                        content_category: 'Contato',
+                      }
+                    })}
                   >
-                    <a href="tel:+5511984291000" className="hover:text-[#1E3A8A]">
-                      (11) 98429-1000
-                    </a>
-                  </TrackClick>
+                    (11) 98429-1000
+                  </a>
                 </p>
               </div>
             </div>
@@ -110,18 +111,19 @@ const Contact = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">E-mail</h3>
                 <p className="text-neutral-600">
-                  <TrackClick 
-                    eventName={PixelEvents.LEAD} 
-                    params={{
-                      content_name: 'Clique no Email',
-                      content_category: 'Contato',
-                    }}
-                    style={{ display: 'inline' }}
+                  <a 
+                    href="mailto:londonschoolmogi@gmail.com" 
+                    className="hover:text-[#1E3A8A]"
+                    onClick={() => trackPixelEvent({
+                      eventName: PixelEvents.LEAD,
+                      params: {
+                        content_name: 'Clique no Email',
+                        content_category: 'Contato',
+                      }
+                    })}
                   >
-                    <a href="mailto:londonschoolmogi@gmail.com" className="hover:text-[#1E3A8A]">
-                      londonschoolmogi@gmail.com
-                    </a>
-                  </TrackClick>
+                    londonschoolmogi@gmail.com
+                  </a>
                 </p>
               </div>
             </div>
@@ -151,42 +153,22 @@ const Contact = () => {
         {/* Botões desktop e mobile "Como Chegar" */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
           <div className="hidden lg:block">
-            <TrackClick 
-              eventName={PixelEvents.LEAD}
-              params={{
-                content_name: 'Agendar Aula Experimental',
-                content_category: 'Conversão Principal',
-                value: 50,
-                currency: 'BRL',
-              }}
-              className="w-full"
+            <Button
+              size="lg"
+              onClick={() => redirectToWhatsApp()}
+              className="w-full bg-primary hover:bg-primary-hover text-white h-14 flex items-center justify-center rounded-lg transition-all transform hover:scale-105"
             >
-              <Button
-                size="lg"
-                onClick={() => redirectToWhatsApp()}
-                className="w-full bg-primary hover:bg-primary-hover text-white h-14 flex items-center justify-center rounded-lg transition-all transform hover:scale-105"
-              >
-                Agende sua Aula Experimental
-              </Button>
-            </TrackClick>
+              Agende sua Aula Experimental
+            </Button>
           </div>
           
-          <TrackClick 
-            eventName="MapView"
-            params={{
-              content_name: 'Como Chegar',
-              content_category: 'Localização',
-            }}
-            className="w-full"
+          <Button
+            onClick={redirectToGoogleMaps}
+            className="w-full bg-primary hover:bg-primary-hover text-white h-12 md:h-14 text-sm md:text-base flex items-center justify-center rounded-lg transition-all transform hover:scale-105"
           >
-            <Button
-              onClick={redirectToGoogleMaps}
-              className="w-full bg-primary hover:bg-primary-hover text-white h-12 md:h-14 text-sm md:text-base flex items-center justify-center rounded-lg transition-all transform hover:scale-105"
-            >
-              <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              Como Chegar
-            </Button>
-          </TrackClick>
+            <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+            Como Chegar
+          </Button>
         </div>
       </div>
     </section>
