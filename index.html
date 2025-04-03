@@ -5,6 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="London School - Escola de Idiomas em Mogi das Cruzes. Aprenda inglês, espanhol, francês e outros idiomas com professores nativos." />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>London School - Escola de Idiomas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,5 +40,25 @@
     /></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Adiciona um timestamp como parâmetro para forçar atualização de cache
+      document.addEventListener('DOMContentLoaded', function() {
+        const timestamp = new Date().getTime();
+        const scripts = document.querySelectorAll('script[src]');
+        const links = document.querySelectorAll('link[rel="stylesheet"]');
+        
+        scripts.forEach(script => {
+          if (script.src && !script.src.includes('://')) {
+            script.src = script.src + (script.src.includes('?') ? '&' : '?') + `v=${timestamp}`;
+          }
+        });
+        
+        links.forEach(link => {
+          if (link.href && !link.href.includes('://')) {
+            link.href = link.href + (link.href.includes('?') ? '&' : '?') + `v=${timestamp}`;
+          }
+        });
+      });
+    </script>
   </body>
 </html>
