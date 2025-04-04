@@ -1,5 +1,6 @@
 import { MessageCircle, X, Send } from "lucide-react";
 import { useState } from "react";
+import { trackPixelEvent, PixelEvents } from "../lib/pixelTracker";
 
 const WHATSAPP_NUMBER = "5511984291000";
 const DEFAULT_MESSAGE = "Olá! Gostaria de saber mais informações dos planos e horários disponíveis, e como agendar uma aula experimental gratuita.";
@@ -12,6 +13,20 @@ const WhatsAppButton = () => {
     if (!message.trim()) return;
     const finalMessage = message.trim();
     const encodedMessage = encodeURIComponent(finalMessage);
+    
+    // Rastrear evento de contato no Facebook Pixel
+    trackPixelEvent({
+      eventName: PixelEvents.CONTACT,
+      params: {
+        content_name: 'Contato via WhatsApp Flutuante',
+        content_category: 'Contato',
+        value: 10,
+        currency: 'BRL',
+        message_content: finalMessage.substring(0, 30) + (finalMessage.length > 30 ? '...' : '')
+      },
+      serverSide: true // Envia também para o servidor
+    });
+    
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
     setMessage("");
     setIsOpen(false);
@@ -100,6 +115,7 @@ const WhatsAppButton = () => {
                   ? 'bg-[#075E54] text-white hover:bg-[#075E54]/90' 
                   : 'bg-gray-200 text-gray-400'
               } transition-colors`}
+              data-button-type="whatsapp-flutuante"
             >
               <Send className="w-5 h-5" />
             </button>
@@ -109,7 +125,19 @@ const WhatsAppButton = () => {
 
       {/* Botão Flutuante */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          // Rastrear abertura do chat como interação
+          if (!isOpen) {
+            trackPixelEvent({
+              eventName: 'ChatOpen',
+              params: {
+                content_name: 'Abertura de Chat WhatsApp',
+                content_category: 'Interação'
+              }
+            });
+          }
+        }}
         className="bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:bg-[#25D366]/90 transition-all transform hover:scale-110 hover:rotate-3 animate-pulse"
       >
         <MessageCircle className="h-6 w-6" />
