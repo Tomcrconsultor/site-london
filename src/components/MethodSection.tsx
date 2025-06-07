@@ -43,7 +43,11 @@ const benefits = [
   }
 ];
 
-export default function MethodSection() {
+interface MethodSectionProps {
+  openLeadForm?: () => void
+}
+
+export default function MethodSection({ openLeadForm }: MethodSectionProps) {
   return (
     <section id="method" className="py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,8 +106,8 @@ export default function MethodSection() {
               Nossa metodologia única combina práticas modernas de ensino com um ambiente acolhedor,
               permitindo que você desenvolva fluência naturalmente e com confiança.
             </p>
-            <Button 
-              onClick={() => redirectToWhatsApp()}
+            <Button
+              onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp())}
               className="bg-white text-[#1E3A8A] hover:bg-white/90"
             >
               Agende sua aula experimental gratuita

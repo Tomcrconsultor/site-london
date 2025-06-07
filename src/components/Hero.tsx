@@ -9,7 +9,11 @@ const redirectToWhatsApp = (message: string = DEFAULT_MESSAGE) => {
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 };
 
-const Hero = () => {
+interface HeroProps {
+  openLeadForm?: () => void
+}
+
+const Hero = ({ openLeadForm }: HeroProps) => {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -33,7 +37,7 @@ const Hero = () => {
              e um método direto que coloca você conversando desde a primeira aula.
           </p>
           <Button
-            onClick={() => redirectToWhatsApp()}
+            onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp())}
             className="w-full max-w-xs md:max-w-sm mx-auto bg-orange-500 hover:bg-orange-600 text-white h-12 md:h-14 text-sm md:text-base flex items-center justify-center rounded-lg transition-all transform hover:scale-105 px-6 whitespace-normal"
           >
             Agende agora sua aula experimental gratuita

@@ -144,7 +144,13 @@ const redirectToWhatsApp = (message: string) => {
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 };
 
-const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => {
+interface PlanCardProps {
+  plan: typeof plans[0]
+  index: number
+  openLeadForm?: () => void
+}
+
+const PlanCard = ({ plan, index, openLeadForm }: PlanCardProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [isHovered, setIsHovered] = useState(false);
@@ -287,9 +293,9 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Button 
+          <Button
             variant="outline"
-            onClick={() => redirectToWhatsApp(plan.whatsappMessage)}
+            onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp(plan.whatsappMessage))}
             className={`w-full h-11 transition-all duration-500 bg-[#1E3A8A] text-white hover:bg-[#1E3A8A]/90 ${
               isHovered ? 'shadow-lg scale-105' : ''
             }`}
@@ -311,7 +317,11 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
   );
 };
 
-const Plans = () => {
+interface PlansProps {
+  openLeadForm?: () => void
+}
+
+const Plans = ({ openLeadForm }: PlansProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -340,7 +350,7 @@ const Plans = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           {plans.map((plan, index) => (
-            <PlanCard key={index} plan={plan} index={index} />
+            <PlanCard key={index} plan={plan} index={index} openLeadForm={openLeadForm} />
           ))}
         </motion.div>
       </div>
