@@ -36,7 +36,11 @@ const redirectToGoogleMaps = () => {
   window.open('https://www.google.com/maps/dir//Rua+Doutor+Carlos+da+Silva+Tupiniquim+79+Centro+Mogi+das+Cruzes', '_blank');
 };
 
-const Contact = () => {
+interface ContactProps {
+  openLeadForm?: () => void
+}
+
+const Contact = ({ openLeadForm }: ContactProps) => {
   return (
     <section id="contact" className="py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -155,7 +159,7 @@ const Contact = () => {
           <div className="hidden lg:block">
             <Button
               size="lg"
-              onClick={() => redirectToWhatsApp()}
+              onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp())}
               className="w-full bg-primary hover:bg-primary-hover text-white h-14 flex items-center justify-center rounded-lg transition-all transform hover:scale-105"
               data-button-type="aula"
             >

@@ -63,7 +63,11 @@ const benefits = [
   "Ambiente imersivo",
 ];
 
-const Languages = () => {
+interface LanguagesProps {
+  openLeadForm?: () => void
+}
+
+const Languages = ({ openLeadForm }: LanguagesProps) => {
   return (
     <section id="languages" className="py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -131,8 +135,8 @@ const Languages = () => {
             <p className="text-lg opacity-90 mb-6">
               Escolha o idioma que mais combina com seus objetivos e descubra como é fácil aprender com nosso método exclusivo.
             </p>
-            <button 
-              onClick={() => redirectToWhatsApp()}
+            <button
+              onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp())}
               className="bg-white text-[#1E3A8A] px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all"
             >
               Agende sua aula experimental gratuita

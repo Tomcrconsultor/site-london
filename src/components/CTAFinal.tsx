@@ -11,7 +11,11 @@ const redirectToWhatsApp = (message: string = DEFAULT_MESSAGE) => {
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 };
 
-export default function CTAFinal() {
+interface CTAFinalProps {
+  openLeadForm?: () => void
+}
+
+export default function CTAFinal({ openLeadForm }: CTAFinalProps) {
   return (
     <section id="cta-final" className="py-24 bg-gradient-to-br from-[#1E3A8A] to-[#1E3A8A]/90 text-white relative overflow-hidden">
       {/* Círculos decorativos */}
@@ -36,7 +40,7 @@ export default function CTAFinal() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch max-w-3xl mx-auto px-4">
             <Button
               size="lg"
-              onClick={() => redirectToWhatsApp()}
+              onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp())}
               className="bg-white text-[#1E3A8A] hover:bg-white/90 text-sm sm:text-base w-full sm:flex-1 py-4 sm:py-6 rounded-xl flex items-center justify-center gap-2 transition-all"
             >
               <span className="line-clamp-2 text-center">
@@ -48,7 +52,7 @@ export default function CTAFinal() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => redirectToWhatsApp(CONTACT_MESSAGE)}
+              onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp(CONTACT_MESSAGE))}
               className="border-white text-white hover:bg-white/10 text-sm sm:text-base w-full sm:flex-1 py-4 sm:py-6 rounded-xl flex items-center justify-center gap-2 transition-all"
             >
               <span className="line-clamp-2 text-center">

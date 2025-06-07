@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Index from './pages/Index';
+import LeadFormPage from './pages/LeadFormPage';
 import PoliticaDePrivacidade from './components/PoliticaDePrivacidade';
 import TermosDeUso from './components/TermosDeUso';
 import { useInitPixel, trackPixelEvent, PixelEvents, useButtonClickTracking } from './lib/pixelTracker';
@@ -108,6 +109,7 @@ function App() {
       <GlobalButtonTracking />
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/teste" element={<LeadFormPage />} />
         <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
         <Route path="/termos-de-uso" element={<TermosDeUso />} />
         <Route path="*" element={<Navigate to="/" replace />} />

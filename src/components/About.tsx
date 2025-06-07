@@ -10,7 +10,11 @@ const redirectToWhatsApp = (message: string = DEFAULT_MESSAGE) => {
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 };
 
-const About = () => {
+interface AboutProps {
+  openLeadForm?: () => void
+}
+
+const About = ({ openLeadForm }: AboutProps) => {
   return (
     <section id="about" className="py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -94,8 +98,8 @@ const About = () => {
             Nossa equipe de professores utiliza o método direto,
             garantindo que você aprenda de forma natural e prática.
           </p>
-          <Button 
-            onClick={() => redirectToWhatsApp()}
+          <Button
+            onClick={() => (openLeadForm ? openLeadForm() : redirectToWhatsApp())}
             className="bg-[#1E3A8A] hover:bg-[#1E3A8A]/90 text-white"
           >
             Agende sua aula experimental gratuita
