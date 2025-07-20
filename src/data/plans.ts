@@ -72,7 +72,7 @@ export const ADULT_PLANS_16_PLUS: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '2 anos',
     minutosPorAula: 50,
     horarios: 'Flexível (presencial ou online)',
     extras: 'Método direto, foco em conversação, professores nativos'
@@ -84,7 +84,7 @@ export const ADULT_PLANS_16_PLUS: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '1 ano',
     minutosPorAula: 50,
     horarios: 'Flexível (presencial ou online)',
     extras: 'Método direto, foco em conversação, professores nativos'
@@ -96,7 +96,7 @@ export const ADULT_PLANS_16_PLUS: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '8 meses',
     minutosPorAula: 50,
     horarios: 'Flexível (presencial ou online)',
     extras: 'Método direto, foco em conversação, professores nativos'
@@ -108,7 +108,7 @@ export const ADULT_PLANS_16_PLUS: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '2 anos',
     minutosPorAula: 50,
     horarios: 'Flexível',
     extras: 'Aulas particulares em dupla'
@@ -120,7 +120,7 @@ export const ADULT_PLANS_16_PLUS: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '1 ano',
     minutosPorAula: 50,
     horarios: 'Flexível',
     extras: 'Aulas particulares em dupla'
@@ -132,7 +132,7 @@ export const ADULT_PLANS_16_PLUS: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '8 meses',
     minutosPorAula: 50,
     horarios: 'Flexível',
     extras: 'Aulas particulares em dupla'
@@ -192,7 +192,7 @@ export const KIDS_TEENS_PLANS_UNDER_16: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '2 anos',
     minutosPorAula: 50,
     horarios: 'Flexível (presencial ou online)',
     extras: 'Método direto, foco em conversação, professores nativos'
@@ -204,7 +204,7 @@ export const KIDS_TEENS_PLANS_UNDER_16: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '1 ano',
     minutosPorAula: 50,
     horarios: 'Flexível (presencial ou online)',
     extras: 'Método direto, foco em conversação, professores nativos'
@@ -216,7 +216,7 @@ export const KIDS_TEENS_PLANS_UNDER_16: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '8 meses',
     minutosPorAula: 50,
     horarios: 'Flexível (presencial ou online)',
     extras: 'Método direto, foco em conversação, professores nativos'
@@ -228,7 +228,7 @@ export const KIDS_TEENS_PLANS_UNDER_16: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '2 anos',
     minutosPorAula: 50,
     horarios: 'Flexível',
     extras: 'Aulas particulares em dupla'
@@ -240,7 +240,7 @@ export const KIDS_TEENS_PLANS_UNDER_16: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '1 ano',
     minutosPorAula: 50,
     horarios: 'Flexível',
     extras: 'Aulas particulares em dupla'
@@ -252,7 +252,7 @@ export const KIDS_TEENS_PLANS_UNDER_16: Plan[] = [
     taxaMatricula: 49,
     apostila: 140,
     livro: 260,
-    duracao: '4 anos',
+    duracao: '8 meses',
     minutosPorAula: 50,
     horarios: 'Flexível',
     extras: 'Aulas particulares em dupla'
