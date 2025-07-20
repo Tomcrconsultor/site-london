@@ -82,6 +82,8 @@ const PlanCard = ({ plan, index }: { plan: Plan; index: number }) => {
       onMouseLeave={() => setIsHovered(false)}
       className={`relative overflow-hidden rounded-3xl shadow-lg transition-all duration-500 flex flex-col ${theme} ${
         isHovered ? 'shadow-2xl translate-y-[-8px]' : ''
+      } ${
+        plan.categoria.includes('VIP') ? 'max-w-sm w-full' : ''
       }`}
     >
       {/* Cabeçalho */}
@@ -161,6 +163,14 @@ const PlanCard = ({ plan, index }: { plan: Plan; index: number }) => {
               <span className="text-neutral-600">Material:</span>
               <p className="font-semibold text-[#1E3A8A]">{formatCurrency(materialCost)}</p>
             </div>
+            {plan.multaCancelamento && (
+              <>
+                <div className="col-span-2">
+                  <span className="text-neutral-600">Multa cancelamento:</span>
+                  <p className="font-semibold text-[#1E3A8A]">{formatCurrency(plan.multaCancelamento)}</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -365,7 +375,11 @@ const Plans = () => {
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          className={`grid gap-6 ${
+            activeCategory === 'vip-individual' || activeCategory === 'vip-dupla'
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          }`}
         >
           {filteredPlans.map((plan, index) => (
             <PlanCard key={`${plan.categoria}-${plan.modalidade || ''}-${plan.aulasMes || ''}-${index}`} plan={plan} index={index} />
