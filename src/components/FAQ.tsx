@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     question: "Vocês fornecem material didático?",
-    answer: "Sim! Trabalhamos com material didático próprio, atualizado e alinhado com nosso método. O material tem um custo de R$ 220,00 a cada 6 meses, porém alguns planos incluem o material gratuitamente quando o pagamento do semestre é feito à vista. O material é essencial para o acompanhamento das aulas e progresso no aprendizado."
+    answer: "Sim! Trabalhamos com material didático próprio, atualizado e alinhado com nosso método. O material inclui apostila e livros, com valores que variam conforme o plano escolhido. Consulte nossa tabela de preços para valores específicos por modalidade. O material é essencial para o acompanhamento das aulas e progresso no aprendizado."
   }
 ];
 
