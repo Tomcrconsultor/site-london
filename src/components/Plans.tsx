@@ -214,14 +214,22 @@ const PlanCard = ({ plan, index }: { plan: Plan; index: number }) => {
             )}
           </div>
 
-          {(plan.observacao || plan.extras) && (
+          {(plan.observacao || plan.extras || plan.categoria.includes('VIP')) && (
             <motion.div 
               className="flex items-start gap-2 mt-3 p-3 bg-white/60 rounded-lg"
               animate={isHovered ? { backgroundColor: "rgba(255, 255, 255, 0.8)" } : {}}
             >
               <Info className="w-4 h-4 text-[#1E3A8A] mt-0.5 flex-shrink-0" />
               <span className="text-xs text-neutral-700">
-                {plan.observacao || plan.extras}
+                {plan.categoria.includes('VIP') && !plan.multaCancelamento ? (
+                  <>
+                    {plan.observacao || plan.extras}
+                    {plan.observacao || plan.extras ? <br /> : ''}
+                    <span className="font-semibold text-green-600">✓ Sem multa de cancelamento</span>
+                  </>
+                ) : (
+                  plan.observacao || plan.extras
+                )}
               </span>
             </motion.div>
           )}
