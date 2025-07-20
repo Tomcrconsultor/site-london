@@ -66,7 +66,7 @@ const PlanCard = ({ plan, index }: { plan: Plan; index: number }) => {
 
   const whatsappMessage = `Olá! Gostaria de saber mais informações sobre o plano ${plan.categoria}${plan.aulasMes ? ` (${plan.aulasMes} aulas/mês)` : ''}${plan.modalidade ? ` - ${plan.modalidade}` : ''}. Podem me ajudar com horários e valores?`;
 
-  const materialCost = plan.apostila + plan.livro;
+  const materialCost = plan.livro;
 
   return (
     <motion.div
