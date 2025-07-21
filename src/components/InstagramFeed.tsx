@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Instagram, Heart, MessageCircle } from 'lucide-react';
-import { instagramService, InstagramPost } from '@/services/instagramService';
+import { instagramRealService, InstagramPost } from '@/services/instagramReal';
 
 const InstagramFeed = () => {
   const [posts, setPosts] = useState<InstagramPost[]>([]);
@@ -10,12 +10,19 @@ const InstagramFeed = () => {
 
   useEffect(() => {
     loadInstagramPosts();
+    
+    // Atualizar automaticamente a cada 30 minutos
+    const interval = setInterval(() => {
+      loadInstagramPosts();
+    }, 30 * 60 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadInstagramPosts = async () => {
     try {
       setLoading(true);
-      const instagramPosts = await instagramService.getRecentPosts(6);
+      const instagramPosts = await instagramRealService.getRecentPosts(6);
       setPosts(instagramPosts);
     } catch (error) {
       console.error('Erro ao carregar posts do Instagram:', error);
