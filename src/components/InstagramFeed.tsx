@@ -20,7 +20,7 @@ const InstagramFeed = () => {
     {
       id: '1',
       permalink: 'https://instagram.com/p/sample1',
-      media_url: '/images/instagram-placeholder-1.jpg',
+      media_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=400&fit=crop',
       media_type: 'IMAGE' as const,
       caption: 'Aulas dinâmicas e interativas na London School! 🎓 #ingles #mogidascruzes',
       timestamp: new Date().toISOString(),
@@ -28,7 +28,7 @@ const InstagramFeed = () => {
     {
       id: '2',
       permalink: 'https://instagram.com/p/sample2',
-      media_url: '/images/instagram-placeholder-2.jpg',
+      media_url: 'https://images.unsplash.com/photo-1448932223592-d1fc686e76ea?w=400&h=400&fit=crop',
       media_type: 'IMAGE' as const,
       caption: 'Professores nativos e metodologia exclusiva! 🌍 #londonschool',
       timestamp: new Date().toISOString(),
@@ -36,7 +36,7 @@ const InstagramFeed = () => {
     {
       id: '3',
       permalink: 'https://instagram.com/p/sample3',
-      media_url: '/images/instagram-placeholder-3.jpg',
+      media_url: 'https://images.unsplash.com/photo-1546413665-d3bcf8e3f6d4?w=400&h=400&fit=crop',
       media_type: 'IMAGE' as const,
       caption: 'Turmas pequenas para melhor aprendizado! 📚 #auladeingles',
       timestamp: new Date().toISOString(),
@@ -44,7 +44,7 @@ const InstagramFeed = () => {
     {
       id: '4',
       permalink: 'https://instagram.com/p/sample4',
-      media_url: '/images/instagram-placeholder-4.jpg',
+      media_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop',
       media_type: 'IMAGE' as const,
       caption: 'Sucesso dos nossos alunos! 🏆 #resultados #inglesfluente',
       timestamp: new Date().toISOString(),
@@ -52,7 +52,7 @@ const InstagramFeed = () => {
     {
       id: '5',
       permalink: 'https://instagram.com/p/sample5',
-      media_url: '/images/instagram-placeholder-5.jpg',
+      media_url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=400&fit=crop',
       media_type: 'IMAGE' as const,
       caption: 'Ambiente moderno e acolhedor! ✨ #londonschoolmogi',
       timestamp: new Date().toISOString(),
@@ -60,7 +60,7 @@ const InstagramFeed = () => {
     {
       id: '6',
       permalink: 'https://instagram.com/p/sample6',
-      media_url: '/images/instagram-placeholder-6.jpg',
+      media_url: 'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=400&h=400&fit=crop',
       media_type: 'IMAGE' as const,
       caption: 'Flexibilidade de horários para seu estilo de vida! ⏰',
       timestamp: new Date().toISOString(),
