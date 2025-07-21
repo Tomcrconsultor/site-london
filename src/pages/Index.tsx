@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Statistics from "@/components/Statistics";
-import InstagramFeedFinal from "@/components/InstagramFeedFinal";
+// import InstagramFeedFinal from "@/components/InstagramFeedFinal";
 import Languages from "@/components/Languages";
 import MethodSection from "@/components/MethodSection";
 import Plans from "@/components/Plans";
@@ -20,7 +20,7 @@ const Index = () => {
       <Hero />
       <About />
       <Statistics />
-      <InstagramFeedFinal />
+      {/* InstagramFeedFinal oculto temporariamente conforme solicitado */}
       <Languages />
       <MethodSection />
       <Plans />

@@ -1,6 +1,6 @@
 /**
- * Serviço de integração com Instagram
- * Usa uma combinação de métodos para buscar postagens reais
+ * Serviço oficial de integração com Instagram Basic Display API
+ * Utiliza apenas métodos oficiais aprovados pelo Instagram
  */
 
 interface InstagramPost {
@@ -15,143 +15,278 @@ interface InstagramPost {
   comments_count?: number;
 }
 
+interface InstagramApiResponse {
+  data: any[];
+  paging?: {
+    cursors: {
+      before: string;
+      after: string;
+    };
+    next?: string;
+  };
+}
+
 class InstagramService {
   private readonly INSTAGRAM_USERNAME = 'londonschool_mogidascruzes';
-  private readonly API_BASE = 'https://graph.facebook.com/v18.0';
+  private readonly API_BASE = 'https://graph.instagram.com';
+  private readonly BASIC_DISPLAY_API = 'https://graph.instagram.com/me/media';
   
-  // Método principal para buscar postagens
+  // Cache para evitar muitas requisições
+  private cache: {
+    posts: InstagramPost[];
+    timestamp: number;
+    expiresIn: number;
+  } | null = null;
+  
+  // Cache válido por 30 minutos
+  private readonly CACHE_DURATION = 30 * 60 * 1000;
+  
+  // Método principal para buscar postagens via API oficial
   async getRecentPosts(limit: number = 6): Promise<InstagramPost[]> {
+    // Verificar cache primeiro
+    if (this.isCacheValid()) {
+      console.log('Usando cache do Instagram');
+      return this.cache!.posts.slice(0, limit);
+    }
+    
     try {
-      // Tentativa 1: Usar a Graph API do Instagram (requer token)
-      return await this.fetchFromGraphAPI(limit);
+      const posts = await this.fetchFromOfficialAPI(limit);
+      this.updateCache(posts);
+      return posts;
     } catch (error) {
-      console.warn('Graph API falhou, usando método alternativo:', error);
-      // Tentativa 2: Usar scraping público via CORS proxy
-      return await this.fetchFromPublicSources(limit);
+      console.error('Erro na API oficial do Instagram:', error);
+      // Se cache existir, usar mesmo expirado
+      if (this.cache) {
+        console.warn('Usando cache expirado devido a erro na API');
+        return this.cache.posts.slice(0, limit);
+      }
+      // Último recurso: dados exemplo
+      return this.getExamplePosts(limit);
     }
   }
 
-  private async fetchFromGraphAPI(limit: number): Promise<InstagramPost[]> {
-    // Para produção real, você precisará:
-    // 1. Criar app no Facebook Developers
-    // 2. Obter Instagram Basic Display API
-    // 3. Gerar access token de longa duração
+  private async fetchFromOfficialAPI(limit: number): Promise<InstagramPost[]> {
     const accessToken = import.meta.env.VITE_INSTAGRAM_ACCESS_TOKEN;
     
     if (!accessToken) {
-      throw new Error('Token de acesso não configurado');
+      throw new Error('VITE_INSTAGRAM_ACCESS_TOKEN não configurado. Consulte SETUP_INSTAGRAM.md');
     }
 
+    // Buscar dados do usuário primeiro para validar token
+    await this.validateToken(accessToken);
+
+    // Buscar postagens com todos os campos necessários
     const response = await fetch(
-      `${this.API_BASE}/me/media?fields=id,media_type,media_url,permalink,caption,timestamp,username&access_token=${accessToken}&limit=${limit}`
+      `${this.BASIC_DISPLAY_API}?fields=id,media_type,media_url,thumbnail_url,permalink,caption,timestamp&access_token=${accessToken}&limit=${limit}`
     );
 
     if (!response.ok) {
-      throw new Error(`Erro na API: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Instagram API Error ${response.status}: ${errorData.error?.message || 'Erro desconhecido'}`);
     }
 
-    const data = await response.json();
-    return data.data || [];
+    const data: InstagramApiResponse = await response.json();
+    return this.transformInstagramData(data.data || []);
   }
 
-  private async fetchFromPublicSources(limit: number): Promise<InstagramPost[]> {
-    // Método alternativo usando serviço público de scraping
-    try {
-      const response = await fetch(
-        `https://instagram-scraper-api2.p.rapidapi.com/v1/posts?username_or_id_or_url=${this.INSTAGRAM_USERNAME}&amount=${limit}`,
-        {
-          method: 'GET',
-          headers: {
-            'X-RapidAPI-Key': import.meta.env.VITE_RAPIDAPI_KEY || '',
-            'X-RapidAPI-Host': 'instagram-scraper-api2.p.rapidapi.com'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        return this.transformApiData(data.data || []);
-      }
-    } catch (error) {
-      console.warn('API alternativa falhou, usando dados mock com imagens reais:', error);
+  private async validateToken(accessToken: string): Promise<void> {
+    const response = await fetch(
+      `https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`
+    );
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Token inválido: ${errorData.error?.message || 'Verifique o token no arquivo .env'}`);
     }
-
-    // Fallback: Usar imagens reais do Instagram via embed
-    return this.getRealInstagramPosts();
   }
 
-  private transformApiData(apiData: any[]): InstagramPost[] {
-    return apiData.map(post => ({
-      id: post.id || post.pk,
-      permalink: `https://instagram.com/p/${post.code}`,
-      media_url: post.display_url || post.image_versions?.candidates?.[0]?.url,
-      media_type: post.media_type === 8 ? 'CAROUSEL_ALBUM' : 
-                  post.media_type === 2 ? 'VIDEO' : 'IMAGE',
-      caption: post.caption?.text || post.caption,
-      timestamp: post.taken_at ? new Date(post.taken_at * 1000).toISOString() : new Date().toISOString(),
+  private transformInstagramData(data: any[]): InstagramPost[] {
+    return data.map(post => ({
+      id: post.id,
+      permalink: post.permalink,
+      media_url: post.media_type === 'VIDEO' ? (post.thumbnail_url || post.media_url) : post.media_url,
+      media_type: post.media_type as 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM',
+      caption: post.caption || '',
+      timestamp: post.timestamp,
       username: this.INSTAGRAM_USERNAME,
-      like_count: post.like_count,
-      comments_count: post.comments_count
+      like_count: 0, // Basic Display API não fornece likes
+      comments_count: 0 // Basic Display API não fornece comentários
     }));
   }
 
-  private getRealInstagramPosts(): InstagramPost[] {
-    // Método inteligente: Usar embeds reais do Instagram
-    // Estas são postagens reais da conta @londonschool_mogidascruzes
-    return [
+  // Métodos de cache
+  private isCacheValid(): boolean {
+    if (!this.cache) return false;
+    return Date.now() - this.cache.timestamp < this.CACHE_DURATION;
+  }
+
+  private updateCache(posts: InstagramPost[]): void {
+    this.cache = {
+      posts,
+      timestamp: Date.now(),
+      expiresIn: this.CACHE_DURATION
+    };
+  }
+
+  // Limpar cache manualmente se necessário
+  public clearCache(): void {
+    this.cache = null;
+  }
+
+  private getExamplePosts(limit: number): InstagramPost[] {
+    // Posts de exemplo para desenvolvimento/fallback
+    // NOTA: Use apenas quando a API oficial não estiver disponível
+    const examplePosts: InstagramPost[] = [
       {
-        id: 'C9KZ8V2uL8X',
-        permalink: 'https://www.instagram.com/p/C9KZ8V2uL8X',
-        media_url: 'https://scontent.cdninstagram.com/v/t51.29350-15/451036444_1431539747615029_8803134514264702302_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=18de74&_nc_ohc=8X8Z8V2uL8XAb4x3Z8V2uL8X&_nc_ht=scontent.cdninstagram.com&edm=ANo9K5cEAAAA&oh=00_AfD8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X8Z8V2uL8X',
+        id: 'example_1',
+        permalink: `https://www.instagram.com/${this.INSTAGRAM_USERNAME}`,
+        media_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&h=500&fit=crop',
         media_type: 'IMAGE',
-        caption: 'Aula especial de conversação hoje! 🗣️ Nossos alunos praticando inglês com professores nativos. #londonschool #inglesmogi',
-        timestamp: '2024-07-15T14:30:00Z',
-        username: 'londonschool_mogidascruzes',
+        caption: 'Aula especial de conversação! 🗣️ Nossos alunos praticando inglês com professores nativos. #londonschool #inglesmogi',
+        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        username: this.INSTAGRAM_USERNAME,
         like_count: 127,
         comments_count: 23
       },
       {
-        id: 'C8YZ5A9mN4P',
-        permalink: 'https://www.instagram.com/p/C8YZ5A9mN4P',
-        media_url: 'https://scontent.cdninstagram.com/v/t51.29350-15/448923117_1220934568991234_6655443322112345678_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=18de74&_nc_ohc=8YZ5A9mN4PAb5x4Y5A9mN4P&_nc_ht=scontent.cdninstagram.com&edm=ANo9K5cEAAAA&oh=00_AfC8YZ5A9mN4P8YZ5A9mN4P8YZ5A9mN4P8YZ5A9mN4P8YZ5A9mN4P8YZ5A9mN4P',
+        id: 'example_2',
+        permalink: `https://www.instagram.com/${this.INSTAGRAM_USERNAME}`,
+        media_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=500&fit=crop',
         media_type: 'IMAGE',
         caption: 'Nossos alunos conquistando fluência! 💪 Resultados reais com método comprovado. #inglesfluente #londonschoolmogi',
-        timestamp: '2024-07-12T16:45:00Z',
-        username: 'londonschool_mogidascruzes',
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        username: this.INSTAGRAM_USERNAME,
         like_count: 89,
         comments_count: 15
       },
       {
-        id: 'C7WX3B8kL7M',
-        permalink: 'https://www.instagram.com/p/C7WX3B8kL7M',
-        media_url: 'https://scontent.cdninstagram.com/v/t51.29350-15/447812306_1112345678901234_5544332211234567890_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=18de74&_nc_ohc=7WX3B8kL7MAb6x5X3B8kL7M&_nc_ht=scontent.cdninstagram.com&edm=ANo9K5cEAAAA&oh=00_AfD7WX3B8kL7M7WX3B8kL7M7WX3B8kL7M7WX3B8kL7M7WX3B8kL7M',
+        id: 'example_3',
+        permalink: `https://www.instagram.com/${this.INSTAGRAM_USERNAME}`,
+        media_url: 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=500&h=500&fit=crop',
         media_type: 'IMAGE',
         caption: 'Ambiente inspirador para aprender! ✨ Conforto e tecnologia para seu melhor aprendizado. #londonschool #mogidascruzes',
-        timestamp: '2024-07-10T10:20:00Z',
-        username: 'londonschool_mogidascruzes',
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        username: this.INSTAGRAM_USERNAME,
         like_count: 156,
         comments_count: 31
+      },
+      {
+        id: 'example_4',
+        permalink: `https://www.instagram.com/${this.INSTAGRAM_USERNAME}`,
+        media_url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500&h=500&fit=crop',
+        media_type: 'IMAGE',
+        caption: 'Certificação internacional válida! 📜 Prepare-se para o mundo com nosso método exclusivo.',
+        timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        username: this.INSTAGRAM_USERNAME,
+        like_count: 203,
+        comments_count: 42
+      },
+      {
+        id: 'example_5',
+        permalink: `https://www.instagram.com/${this.INSTAGRAM_USERNAME}`,
+        media_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=500&fit=crop',
+        media_type: 'IMAGE',
+        caption: 'Turma avançada em ação! 🎯 Debates e discussões em inglês com total confiança.',
+        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        username: this.INSTAGRAM_USERNAME,
+        like_count: 95,
+        comments_count: 18
+      },
+      {
+        id: 'example_6',
+        permalink: `https://www.instagram.com/${this.INSTAGRAM_USERNAME}`,
+        media_url: 'https://images.unsplash.com/photo-1491841573337-6e7d09e29b3c?w=500&h=500&fit=crop',
+        media_type: 'IMAGE',
+        caption: 'Workshop de business English! 💼 Preparação para o mercado internacional.',
+        timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+        username: this.INSTAGRAM_USERNAME,
+        like_count: 142,
+        comments_count: 27
       }
     ];
+
+    return examplePosts.slice(0, limit);
   }
 
-  // Método para configurar o token (será chamado no setup)
-  async setupInstagramIntegration() {
-    const instructions = `
-    PARA INTEGRAÇÃO REAL DO INSTAGRAM:
+  // Método para diagnóstico e configuração
+  async getIntegrationStatus(): Promise<{
+    hasToken: boolean;
+    tokenValid: boolean | null;
+    cacheStatus: string;
+    lastUpdate: string | null;
+    nextSteps: string[];
+  }> {
+    const accessToken = import.meta.env.VITE_INSTAGRAM_ACCESS_TOKEN;
+    const hasToken = !!accessToken;
+    let tokenValid: boolean | null = null;
     
-    1. Acesse: https://developers.facebook.com/
-    2. Crie um aplicativo e adicione Instagram Basic Display
-    3. Configure as URLs de redirecionamento
-    4. Gere um token de acesso de longa duração
-    5. Adicione ao arquivo .env:
-       VITE_INSTAGRAM_ACCESS_TOKEN=seu_token_aqui
-    6. Ou use serviço:
-       VITE_RAPIDAPI_KEY=sua_chave_rapidapi
+    if (hasToken) {
+      try {
+        await this.validateToken(accessToken);
+        tokenValid = true;
+      } catch {
+        tokenValid = false;
+      }
+    }
+    
+    const cacheStatus = this.isCacheValid() ? 'válido' : 'expirado/inexistente';
+    const lastUpdate = this.cache ? new Date(this.cache.timestamp).toLocaleString('pt-BR') : null;
+    
+    const nextSteps: string[] = [];
+    if (!hasToken) {
+      nextSteps.push('Configurar VITE_INSTAGRAM_ACCESS_TOKEN no arquivo .env');
+      nextSteps.push('Consultar SETUP_INSTAGRAM.md para instruções completas');
+    } else if (!tokenValid) {
+      nextSteps.push('Token inválido ou expirado - renovar token de acesso');
+    } else {
+      nextSteps.push('Integração funcionando corretamente!');
+    }
+    
+    return {
+      hasToken,
+      tokenValid,
+      cacheStatus,
+      lastUpdate,
+      nextSteps
+    };
+  }
+
+  // Método para obter instruções de configuração
+  getSetupInstructions(): string {
+    return `
+# CONFIGURAÇÃO INSTAGRAM BASIC DISPLAY API
+
+## Passo 1: Criar aplicativo Facebook
+1. Acesse: https://developers.facebook.com/
+2. Clique em "Meus aplicativos" > "Criar aplicativo"
+3. Escolha "Negócios" como tipo de aplicativo
+4. Adicione "Instagram Basic Display" como produto
+
+## Passo 2: Configurar Instagram Basic Display
+1. Vá para Instagram Basic Display > Configuração básica
+2. Em "Instagram App ID" e "Instagram App Secret", note os valores
+3. Adicione sua URL em "OAuth Redirect URIs":
+   - Para desenvolvimento: http://localhost:5173
+   - Para produção: https://seudominio.com
+
+## Passo 3: Obter token de acesso
+1. Use o Facebook Graph API Explorer
+2. Selecione seu aplicativo
+3. Gere um token de usuário do Instagram
+4. Use a ferramenta de debug para converter em token de longa duração
+
+## Passo 4: Configurar no projeto
+Crie arquivo .env na raiz do projeto:
+\`\`\`
+VITE_INSTAGRAM_ACCESS_TOKEN=seu_token_aqui
+\`\`\`
+
+## Verificação
+Execute no console do browser:
+\`\`\`javascript
+window.instagramService.getIntegrationStatus().then(console.log)
+\`\`\`
     `;
-    
-    console.log(instructions);
-    return instructions;
   }
 }
 
