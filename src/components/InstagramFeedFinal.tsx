@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Instagram, Heart, MessageCircle } from 'lucide-react';
 import { instagramFinalService, InstagramPost } from '@/services/instagramFinal';
 
-const InstagramFeed = () => {
+const InstagramFeedFinal = () => {
   const [posts, setPosts] = useState<InstagramPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -22,7 +22,7 @@ const InstagramFeed = () => {
   const loadInstagramPosts = async () => {
     try {
       setLoading(true);
-      const instagramPosts = await instagramEmbedService.getRecentPosts(6);
+      const instagramPosts = await instagramFinalService.getRecentPosts(6);
       setPosts(instagramPosts);
     } catch (error) {
       console.error('Erro ao carregar posts do Instagram:', error);
@@ -151,15 +151,7 @@ const InstagramFeed = () => {
         </motion.div>
 
         <motion.div
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.1,
-              },
-            },
-          }}
+          variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -168,36 +160,26 @@ const InstagramFeed = () => {
           {posts.map((post, index) => (
             <motion.a
               key={post.id}
-              href="https://www.instagram.com/londonschool_mogidascruzes/"
+              href={post.instagram_url}
               target="_blank"
               rel="noopener noreferrer"
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.6 },
-                },
-              }}
+              variants={itemVariants}
               whileHover={{ scale: 1.05, y: -5 }}
               className="group relative aspect-square overflow-hidden rounded-xl shadow-lg bg-neutral-100"
             >
               <img
-                src={post.media_url}
+                src={post.image_url}
                 alt={post.caption || 'Post do Instagram'}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 loading="lazy"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=400&fit=crop&t=${index}`;
-                }}
               />
               
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-2 left-2 right-2 space-y-1">
-                  {post.like_count && (
+                  {post.likes && (
                     <div className="flex items-center gap-1 text-white text-xs">
                       <Heart className="w-3 h-3 fill-current" />
-                      <span>{post.like_count}</span>
+                      <span>{post.likes}</span>
                     </div>
                   )}
                   {post.caption && (
@@ -231,4 +213,4 @@ const InstagramFeed = () => {
   );
 };
 
-export default InstagramFeed;
+export default InstagramFeedFinal;

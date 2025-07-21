@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Statistics from "@/components/Statistics";
-import InstagramFeed from "@/components/InstagramFeed";
+import InstagramFeedFinal from "@/components/InstagramFeedFinal";
 import Languages from "@/components/Languages";
 import MethodSection from "@/components/MethodSection";
 import Plans from "@/components/Plans";
@@ -20,7 +20,7 @@ const Index = () => {
       <Hero />
       <About />
       <Statistics />
-      <InstagramFeed />
+      <InstagramFeedFinal />
       <Languages />
       <MethodSection />
       <Plans />
